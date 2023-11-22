@@ -25,9 +25,7 @@ namespace APITest.Utilities
 
         public static  string? AppSettingPath = new Helper().SolutionPath() + "\\appsettings.json";
 
-        public static string? BankSystemTestDataPath = new Helper().SolutionPath() + "\\TestData\\BankSystemData.json";
-
         public static string? BankBaseUrl { get; set; }
 
-}
+    }
 }

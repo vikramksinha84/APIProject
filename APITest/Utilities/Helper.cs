@@ -182,5 +182,15 @@ namespace APITest.Utilities
             return JsonConvert.DeserializeObject<T>(File.ReadAllText(file));
         }
 
+        /// <summary>
+        /// GetTestDataPath
+        /// </summary>
+        /// <param name="FileName"></param>
+        /// <returns></returns>
+        public string?  GetTestDataPath(string FileName)
+        {
+           return SolutionPath() + "\\TestData\\"+ FileName+".json";
+        }
+
     }
 }
