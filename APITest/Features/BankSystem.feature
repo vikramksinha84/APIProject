@@ -25,7 +25,7 @@ Scenario: A user can withdraw from an account
     And Verify the account details are correctly updated as 0 in the JSON response
 
 Scenario: A user can delete account
-	Given User Perform DELETE endpoint "account/withdraw" to an account with amount "BankSystemWithDrawAmount"
+	Given User Perform PUT endpoint "account/withdraw" to an account with amount "BankSystemWithDrawAmount"
 	When user the response code is 200
 	Then Verify no error is returned
     And Verify the success '1000$ withdrawn from Account X123 successfully' message
