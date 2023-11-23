@@ -83,5 +83,14 @@ namespace APITest.StepDefinitions
         {
             Assert.True(_settings.Response.As<EmployeeObject>().NewBalance.Equals(ExpactedNewBalance));
         }
+
+        [Given(@"User Perform DELETE endpoint ""([^""]*)"" to delete an account ""([^""]*)""")]
+        public void GivenUserPerformDELETEEndpointToDeleteAnAccount(string uri, string acoountId)
+        {
+            _settings.Request = _settings.Lib?.GetRequest(uri, Method.Delete);
+            _settings.Request.AddUrlSegment("accountID", acoountId);
+            _settings.Response = _settings.RestClient.Execute(_settings.Request);
+        }
+
     }
 }
