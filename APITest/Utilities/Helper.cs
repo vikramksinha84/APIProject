@@ -219,7 +219,7 @@ namespace APITest.Utilities
         /// <param name="response"></param>
         /// <param name="responseObject"></param>
         /// <returns></returns>
-        public static string GetResponseObjectArray(this RestResponse response, string responseObject)
+        public static string GetResponseObjectArray(RestResponse response, string responseObject)
         {
             JArray jArray = JArray.Parse(response.Content);
             foreach (var content in jArray.Children<JObject>())
