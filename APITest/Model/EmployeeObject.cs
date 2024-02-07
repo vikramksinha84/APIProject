@@ -8,7 +8,7 @@ namespace APITest.TestData
 {
     internal class EmployeeObject
     {
-        public int InitialBalance { get; set; }
+        public string? InitialBalance { get; set; }
         public string? AccountName { get; set; }
         public string? Address { get; set; }
         public string?  AccountNumber { get; set; }

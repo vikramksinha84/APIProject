@@ -26,19 +26,19 @@ namespace APITest.Hooks
         [BeforeFeature]
         public static void BeforeFeature(FeatureContext featureContext)
         {
-            //to do
+            //Repoting and loging
         }
 
         [BeforeScenario]
         public void TestInitalize()
         {
-            //to do
+            //DB connection
         }
 
         [AfterScenario]
         public void AfterScenario()
         {
-            //to do
+            //Close DB connection
         }
 
 

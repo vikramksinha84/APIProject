@@ -16,6 +16,8 @@ namespace APITest.Utilities
 
             Settings.BankBaseUrl = Settings.AppSetting?["BankBaseUrl"];
 
+            Settings.IntialAmountKey = Settings.AppSetting?["IntialAmountKey"];
+
         }
     }
 }

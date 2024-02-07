@@ -15,33 +15,46 @@ namespace APITest.StepDefinitions
     {
         private Settings _settings;
         EmployeeObject? payload=null;
+        Dictionary<string, string> replaceValues = new Dictionary<string, string>();
         //Using Context injection to intilize and hsre the data
         public BankSystemStepDefinitioms(Settings settings)
         {
-            _settings = settings;
+            _settings = settings;           
+        }
+
+        [Given(@"user perform request using Bank BaseUrl")]
+        public void GivenUserPerformRequestUsingBankBaseUrl()
+        {
             _settings.RestClient = _settings.Lib?.PerformRequest(Settings.BankBaseUrl);
         }
 
-        [Given(@"User Perform POST endpoint ""([^""]*)"" to create new account with above details")]
-        public void GivenUserPerformPOSTEndpointToCreateNewAccountWithAboveDetails(string uri)
+        [When(@"Account initial Balance is ""([^""]*)""")]
+        public void WhenAccountInitialBalanceIs(string IntialAmount)
         {
-            //Deserialize json Data
-            payload = _settings.Lib?.PerseJson<EmployeeObject>(_settings.Lib.GetTestDataPath("BankSystemData"));
+            replaceValues.Clear();
+            replaceValues.Add(Settings.IntialAmountKey, IntialAmount);
+        }
+
+        [When(@"User Perform POST endpoint ""([^""]*)"" to create new account with above details")]
+        public void WhenUserPerformPOSTEndpointToCreateNewAccountWithAboveDetails(string uri)
+        {
+
             //SerializeJson payload to pass as bodey fpr POst
-            var requestdata = _settings.Lib?.SerializeJson(payload);
+            var requestData = _settings.Lib?.SerializeJson(_settings.Lib.GetTestDataPath("BankSystemData"), replaceValues);
             //Request for POst
             _settings.Request = _settings.Lib?.GetRequest(uri, Method.Post);
             //Perform POst with body requestdata
-            _settings.Lib?.AddPostRequestBody(_settings.Request, requestdata);
+            _settings.Lib?.AddPostRequestBody(_settings.Request, requestData);
             //Getting Response as Model Object
             _settings.Response = _settings.RestClient.Execute<EmployeeObject>(_settings.Request);
         }
 
-        [When(@"user the response code is (.*)")]
-        public void WhenUserTheResponseCodeIs(int status)
+        [Then(@"user the response code is (.*)")]
+        public void ThenUserTheResponseCodeIs(int status)
         {
-            Assert.True(((int?)_settings.Response?.StatusCode).Equals(status), "Expected Status Code is:- " + 7 + " But Found:- " + (int?)_settings.Response?.StatusCode);
+            Assert.True(((int?)_settings.Response?.StatusCode).Equals(status), "Expected Status Code is:- " + 200 + " But Found:- " + (int?)_settings.Response?.StatusCode);
         }
+
 
         [Then(@"Verify no error is returned")]
         public void ThenVerifyNoErrorIsReturned()
@@ -57,15 +70,19 @@ namespace APITest.StepDefinitions
              _settings.Lib?.AssetTrue(sreult, SuccessMessage);
         }
 
-        [Then(@"Verify the account details are correctly returned in the JSON response")]
-        public void ThenVerifyTheAccountDetailsAreCorrectlyReturnedInTheJSONResponse()
+        [Then(@"Verify the account details are correctly returned in the JSON response with initial balance ""([^""]*)""")]
+        public void ThenVerifyTheAccountDetailsAreCorrectlyReturnedInTheJSONResponseWithInitialBalance(string initialBalance)
         {
+            payload = _settings.Lib?.PerseJson<EmployeeObject>(_settings.Lib.GetTestDataPath("BankSystemData"));
+            _settings.Lib?.AssetTrue(_settings.Response.As<EmployeeObject>().Amount, initialBalance);
+            _settings.Lib?.AssetTrue(_settings.Response.As<EmployeeObject>().AccountName, payload?.AccountName);
             _settings.Lib?.AssetTrue(_settings.Response.As<EmployeeObject>().AccountName, payload?.AccountName);
             _settings.Lib?.AssetTrue(_settings.Response.As<EmployeeObject>().Address, payload?.Address);
         }
 
-        [Given(@"User Perform PUT endpoint ""([^""]*)"" to an account with amount ""([^""]*)""")]
-        public void GivenUserPerformPUTEndpointToAnAccountWithAmount(string uri, string jsonfile)
+
+        [When(@"User Perform PUT endpoint ""([^""]*)"" to an account with amount ""([^""]*)""")]
+        public void WhenUserPerformPUTEndpointToAnAccountWithAmount(string uri, string jsonfile)
         {
             payload = _settings.Lib?.PerseJson<EmployeeObject>(_settings.Lib.GetTestDataPath(jsonfile));
             //SerializeJson payload to pass as bodey fpr POst
@@ -78,19 +95,33 @@ namespace APITest.StepDefinitions
             _settings.Response = _settings.RestClient.Execute<EmployeeObject>(_settings.Request);
         }
 
-        [Then(@"Verify the account details are correctly updated as (.*) in the JSON response")]
-        public void ThenVerifyTheAccountDetailsAreCorrectlyUpdatedAsInTheJSONResponse(int ExpactedNewBalance)
+
+        [When(@"User Perform Patch endpoint ""([^""]*)"" to an account with amount ""([^""]*)""")]
+        public void WhenUserPerformPatchEndpointToAnAccountWithAmount(string uri, string jsonfile)
         {
-            Assert.True(_settings.Response.As<EmployeeObject>().NewBalance.Equals(ExpactedNewBalance));
+            payload = _settings.Lib?.PerseJson<EmployeeObject>(_settings.Lib.GetTestDataPath(jsonfile));
+            //SerializeJson payload to pass as bodey fpr POst
+            var requestdata = _settings.Lib?.SerializeJson(payload);
+            //Request for Put
+            _settings.Request = _settings.Lib?.GetRequest(uri, Method.Patch);
+            //Perform POst with body requestdata
+            _settings.Lib?.AddPostRequestBody(_settings.Request, requestdata);
+            //Getting Response as Model Object
+            _settings.Response = _settings.RestClient.Execute<EmployeeObject>(_settings.Request);
         }
 
-        [Given(@"User Perform DELETE endpoint ""([^""]*)"" to delete an account ""([^""]*)""")]
-        public void GivenUserPerformDELETEEndpointToDeleteAnAccount(string uri, string acoountId)
+        [Then(@"Verify the account details are correctly updated as (.*) in the JSON response")]
+        public void ThenVerifyTheAccountDetailsAreCorrectlyUpdatedAsInTheJSONResponse(string ExpactedNewBalance)
+        {
+            Assert.True(_settings.Response.As<EmployeeObject>().Amount?.Equals(ExpactedNewBalance));
+        }
+
+        [When(@"User Perform DELETE endpoint ""([^""]*)"" to delete an account ""([^""]*)""")]
+        public void WhenUserPerformDELETEEndpointToDeleteAnAccount(string uri, string acoountId)
         {
             _settings.Request = _settings.Lib?.GetRequest(uri, Method.Delete);
             _settings.Request.AddUrlSegment("accountID", acoountId);
             _settings.Response = _settings.RestClient.Execute(_settings.Request);
         }
-
     }
 }

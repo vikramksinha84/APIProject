@@ -27,5 +27,7 @@ namespace APITest.Utilities
 
         public static string? BankBaseUrl { get; set; }
 
+        public static string? IntialAmountKey { get; set; }
+
     }
 }

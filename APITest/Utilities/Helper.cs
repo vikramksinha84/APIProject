@@ -192,5 +192,47 @@ namespace APITest.Utilities
            return SolutionPath() + "\\TestData\\"+ FileName+".json";
         }
 
+        /// <summary>
+        /// Load Json and Replace values
+        /// </summary>
+        /// <param name="testDataPath"></param>
+        /// <param name="dict"></param>
+        /// <returns></returns>
+        public string SerializeJson(string testDataPath, Dictionary<string, string> dict)
+        {
+            string jsonString = null;
+            using (StreamReader r = new StreamReader(testDataPath))
+            {
+                var json = r.ReadToEnd();
+                jsonString = JObject.Parse(json).ToString();
+            }
+            foreach (KeyValuePair<string, string> ele in dict)
+            {
+                jsonString = jsonString.Replace(ele.Key, ele.Value);
+            }
+            return jsonString;
+        }
+
+        /// <summary>
+        /// Get Response Object Array
+        /// </summary>
+        /// <param name="response"></param>
+        /// <param name="responseObject"></param>
+        /// <returns></returns>
+        public static string GetResponseObjectArray(this RestResponse response, string responseObject)
+        {
+            JArray jArray = JArray.Parse(response.Content);
+            foreach (var content in jArray.Children<JObject>())
+            {
+                foreach (JProperty property in content.Properties())
+                {
+                    if (property.Name == responseObject)
+                        return property.Value.ToString();
+                }
+            }
+
+            return string.Empty;
+        }
+
     }
 }
